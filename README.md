@@ -6,31 +6,49 @@ A production-grade Python data engineering pipeline designed to ingest, validate
 
 ## Architecture Overview
 
-```text
-healthcare_analytics/
-│
-├── .github/workflows/
-│   └── ci.yml               # Automated CI: linting (Ruff) + test suite on push/PR
-│
-├── data/
-│   ├── raw/                 # Raw source CSVs (git-ignored)
-│   └── processed/           # Validated, compressed Parquet tables
-│
-├── src/
-│   ├── __init__.py
-│   ├── anonymizer.py        # Salted SHA-256 patient pseudonymization
-│   ├── schemas.py           # Domain validation & corruption quarantine filter
-│   └── pipeline.py          # Orchestration: ingestion, metric engineering, Parquet output
-│
-├── tests/
-│   ├── test_anonymizer.py   # Determinism, salting, & edge case unit tests
-│   ├── test_validation.py   # Schema integrity & boundary assertion tests
-│   └── test_pipeline.py     # End-to-end integration test
-│
-├── healthcare_eda.ipynb     # Interactive operational EDA & payer variance audit
-├── requirements.txt         # Pinned production & development dependencies
-└── .gitignore               # Caches, virtual environments, and raw data exclusion
-```
+| Path / Module | Layer | Description |
+| :--- | :--- | :--- |
+| `.github/workflows/ci.yml` | CI/CD | Automated linting (`ruff`) and `pytest` execution on push/PR |
+| `data/raw/` | Storage (Raw) | Source clinical CSV datasets (untracked in Git) |
+| `data/processed/` | Storage (Clean) | Validated, compressed Apache Parquet analytical tables |
+| `src/anonymizer.py` | Security / PHI | Salted SHA-256 deterministic patient pseudonymization |
+| `src/schemas.py` | Validation | Domain boundary enforcement and corrupt record quarantine |
+| `src/pipeline.py` | Orchestration | End-to-end ingestion, feature engineering, and serialization |
+| `tests/test_anonymizer.py` | Unit Test | Hash determinism, salting, and whitespace normalization tests |
+| `tests/test_validation.py` | Unit Test | Temporal inversion, negative billing, and age boundary assertions |
+| `tests/test_pipeline.py` | Integration Test | Full pipeline execution and Parquet output verification |
+| `healthcare_eda.ipynb` | Analytics | Interactive LOS capacity analysis and payer financial audit |
+| `requirements.txt` | Environment | Pinned production and testing package dependencies |
+
+---
+
+## Mathematical Formulation & Engineering Logic
+
+### 1. Cryptographic PHI Pseudonymization
+To maintain HIPAA-aligned de-identification while preserving longitudinal patient tracking across multiple hospital admissions, raw patient identifiers $P_{\text{raw}}$ are normalized (case-folded and whitespace-trimmed) and passed through a salted SHA-256 cryptographic hash function with a secret application salt $S$:
+
+$$\text{Patient\_ID} = \text{ PT-} \parallel \text{SHA256}\Big(\text{ lower}\big(\text{trim}(P_{\text{raw}})\big) \parallel S \Big)_{[0:12]}$$
+
+### 2. Clinical Domain Validation & Quarantine Set
+Let $\mathcal{D}$ represent the raw dataset of $N = 55,500$ clinical records. A record $r_i \in \mathcal{D}$ is admitted to the validated analytical set $\mathcal{D}_{\text{clean}}$ if and only if it satisfies all four clinical and financial invariants:
+
+$$\mathcal{D}_{\text{clean}} = \left\{ r_i \in \mathcal{D} \;\middle\vert{}\; (T_{\text{discharge}, i} \ge T_{\text{admission}, i}) \;\land\; (B_i \ge 0) \;\land\; (0 \le A_i \le 125) \;\land\; (\Phi_i \neq \emptyset) \right\}$$
+
+Where:
+* $T_{\text{admission}, i}$ and $T_{\text{discharge}, i}$ denote the admission and discharge timestamps.
+* $B_i$ is the total billed amount.
+* $A_i$ is the biological patient age at admission.
+* $\Phi_i$ represents the vector of mandatory clinical schema fields.
+* **Quarantine Yield:** $\vert{}\mathcal{D} \setminus \mathcal{D}_{\text{clean}}\vert{} = 108$ corrupt records isolated and dropped, leaving $\vert{}\mathcal{D}_{\text{clean}}\vert{} = 55,392$ verified records.
+
+### 3. Operational Metric Engineering
+For each validated record $r_i \in \mathcal{D}_{\text{clean}}$, net inpatient **Length of Stay ($\text{LOS}_i$)** in days is computed as:
+
+$$\text{LOS}_i = (T_{\text{discharge}, i} - T_{\text{admission}, i})_{\text{days}}$$
+
+To normalize financial auditing across same-day discharges ($\text{LOS}_i = 0$) and multi-week stays without zero-division faults, the **Daily Billing Rate ($R_{\text{daily}, i}$)** is formulated with a unit-day floor:
+
+$$R_{\text{daily}, i} = \frac{B_i}{\max(\text{LOS}_i, 1)}$$
 
 ---
 
@@ -50,9 +68,7 @@ healthcare_analytics/
    - **Result:** Safely quarantined 108 corrupted entries from 55,500 raw records without crashing pipeline execution.
 
 3. **Feature Engineering & Serialization (`src/pipeline.py`)**
-   - Calculates operational metrics:
-     - `Length_of_Stay_Days`: Net inpatient stay duration.
-     - `Daily_Billing_Rate`: Incurred cost normalized by stay duration (0-day admissions handled via zero-division fallback).
+   - Calculates operational metrics (`Length_of_Stay_Days` and `Daily_Billing_Rate`).
    - Serializes clean records into Apache Parquet format for fast, compressed columnar querying.
 
 4. **CI/CD Automation (`.github/workflows/ci.yml`)**
@@ -82,3 +98,11 @@ python -m src.pipeline
 
 ### 4. Interactive Analysis
 Launch `healthcare_eda.ipynb` inside Jupyter or VS Code to explore capacity dynamics, insurer rate variances, and operational summaries.
+
+---
+
+## Author
+
+**Ashutosh Tembhekar**  
+*Data Analytics & Data Engineering*  
+GitHub: [@AshutoshTembhekar](https://github.com/AshutoshTembhekar)
