@@ -1,0 +1,16 @@
+# Bytecode & Caches
+__pycache__/
+*.py[cod]
+*.class
+.pytest_cache/
+.ruff_cache/
+.ipynb_checkpoints/
+# Virtual Environments & IDE
+.vscode/
+venv/
+env/
+# Data artifacts (keep raw and large binaries off remote git)
+data/raw/*
+!data/raw/.gitkeep
+data/processed/*
+!data/processed/.gitkeep
