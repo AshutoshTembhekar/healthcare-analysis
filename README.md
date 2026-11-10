@@ -25,30 +25,30 @@ A production-grade Python data engineering pipeline designed to ingest, validate
 ## Mathematical Formulation & Engineering Logic
 
 ### 1. Cryptographic PHI Pseudonymization
-To maintain HIPAA-aligned de-identification while preserving longitudinal patient tracking across multiple hospital admissions, raw patient identifiers $P_{\text{raw}}$ are normalized (case-folded and whitespace-trimmed) and passed through a salted SHA-256 cryptographic hash function with a secret application salt $S$:
+To maintain HIPAA-aligned de-identification while preserving longitudinal patient tracking across multiple hospital admissions, raw patient identifiers $P_{\mathrm{raw}}$ are normalized (case-folded and whitespace-trimmed) and passed through a salted SHA-256 cryptographic hash function with a secret application salt $S$:
 
-$$\text{Patient\_ID} = \text{ PT-} \parallel \text{SHA256}\Big(\text{ lower}\big(\text{trim}(P_{\text{raw}})\big) \parallel S \Big)_{[0:12]}$$
+$$\mathrm{ID}_{\mathrm{patient}} = \mathrm{PT-} \parallel \mathrm{SHA256}\left(\mathrm{lower}\left(\mathrm{trim}(P_{\mathrm{raw}})\right) \parallel S\right)_{[0:12]}$$
 
 ### 2. Clinical Domain Validation & Quarantine Set
-Let $\mathcal{D}$ represent the raw dataset of $N = 55,500$ clinical records. A record $r_i \in \mathcal{D}$ is admitted to the validated analytical set $\mathcal{D}_{\text{clean}}$ if and only if it satisfies all four clinical and financial invariants:
+Let $D$ represent the raw dataset of $N = 55,500$ clinical records. A record $r_i \in D$ is admitted to the validated analytical set $D_{\mathrm{clean}}$ if and only if it satisfies all four clinical and financial invariants:
 
-$$\mathcal{D}_{\text{clean}} = \left\{ r_i \in \mathcal{D} \;\middle\vert{}\; (T_{\text{discharge}, i} \ge T_{\text{admission}, i}) \;\land\; (B_i \ge 0) \;\land\; (0 \le A_i \le 125) \;\land\; (\Phi_i \neq \emptyset) \right\}$$
+$$D_{\mathrm{clean}} = \lbrace r_i \in D \mid (T_{\mathrm{discharge}, i} \ge T_{\mathrm{admission}, i}) \land (B_i \ge 0) \land (0 \le A_i \le 125) \land (\Phi_i \neq \emptyset) \rbrace$$
 
 Where:
-* $T_{\text{admission}, i}$ and $T_{\text{discharge}, i}$ denote the admission and discharge timestamps.
+* $T_{\mathrm{admission}, i}$ and $T_{\mathrm{discharge}, i}$ denote the admission and discharge timestamps.
 * $B_i$ is the total billed amount.
 * $A_i$ is the biological patient age at admission.
 * $\Phi_i$ represents the vector of mandatory clinical schema fields.
-* **Quarantine Yield:** $\vert{}\mathcal{D} \setminus \mathcal{D}_{\text{clean}}\vert{} = 108$ corrupt records isolated and dropped, leaving $\vert{}\mathcal{D}_{\text{clean}}\vert{} = 55,392$ verified records.
+* **Quarantine Yield:** $\vert{}D \setminus D_{\mathrm{clean}}\vert{} = 108$ corrupt records isolated and dropped, leaving $\vert{}D_{\mathrm{clean}}\vert{} = 55,392$ verified records.
 
 ### 3. Operational Metric Engineering
-For each validated record $r_i \in \mathcal{D}_{\text{clean}}$, net inpatient **Length of Stay ($\text{LOS}_i$)** in days is computed as:
+For each validated record $r_i \in D_{\mathrm{clean}}$, net inpatient **Length of Stay ($\mathrm{LOS}_i$)** in days is computed as:
 
-$$\text{LOS}_i = (T_{\text{discharge}, i} - T_{\text{admission}, i})_{\text{days}}$$
+$$\mathrm{LOS}_i = (T_{\mathrm{discharge}, i} - T_{\mathrm{admission}, i})_{\mathrm{days}}$$
 
-To normalize financial auditing across same-day discharges ($\text{LOS}_i = 0$) and multi-week stays without zero-division faults, the **Daily Billing Rate ($R_{\text{daily}, i}$)** is formulated with a unit-day floor:
+To normalize financial auditing across same-day discharges ($\mathrm{LOS}_i = 0$) and multi-week stays without zero-division faults, the **Daily Billing Rate ($R_{\mathrm{daily}, i}$)** is formulated with a unit-day floor:
 
-$$R_{\text{daily}, i} = \frac{B_i}{\max(\text{LOS}_i, 1)}$$
+$$R_{\mathrm{daily}, i} = \frac{B_i}{\max(\mathrm{LOS}_i, 1)}$$
 
 ---
 
@@ -105,4 +105,4 @@ Launch `healthcare_eda.ipynb` inside Jupyter or VS Code to explore capacity dyna
 
 **Ashutosh Tembhekar**  
 *Data Analytics & Data Engineering*  
-GitHub: [@AshutoshTembhekar](https://github.com/AshutoshTembhekar)
+GitHub: https://github.com/AshutoshTembhekar
