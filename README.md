@@ -6,6 +6,7 @@ A production-grade Python data engineering pipeline designed to ingest, validate
 
 ## Architecture Overview
 
+```text
 healthcare_analytics/
 │
 ├── .github/workflows/
@@ -16,7 +17,7 @@ healthcare_analytics/
 │   └── processed/           # Validated, compressed Parquet tables
 │
 ├── src/
-│   ├── init.py
+│   ├── __init__.py
 │   ├── anonymizer.py        # Salted SHA-256 patient pseudonymization
 │   ├── schemas.py           # Domain validation & corruption quarantine filter
 │   └── pipeline.py          # Orchestration: ingestion, metric engineering, Parquet output
@@ -29,7 +30,7 @@ healthcare_analytics/
 ├── healthcare_eda.ipynb     # Interactive operational EDA & payer variance audit
 ├── requirements.txt         # Pinned production & development dependencies
 └── .gitignore               # Caches, virtual environments, and raw data exclusion
-
+```
 
 ---
 
