@@ -65,18 +65,20 @@ healthcare_analytics/
 
 ### 1. Environment Setup
 ```bash
-# Clone the repository
-git clone <your-repo-url>
-cd healthcare_analytics
-
-# Install dependencies
+git clone [https://github.com/AshutoshTembhekar/healthcare-analysis.git](https://github.com/AshutoshTembhekar/healthcare-analysis.git)
+cd healthcare-analysis
 pip install -r requirements.txt
+```
 
-Run Test Suite
-Bash
+### 2. Run Test Suite
+```bash
 pytest tests/ -v
+```
 
-
-Execute Pipeline
-Bash
+### 3. Execute Pipeline
+```bash
 python -m src.pipeline
+```
+
+### 4. Interactive Analysis
+Launch `healthcare_eda.ipynb` inside Jupyter or VS Code to explore capacity dynamics, insurer rate variances, and operational summaries.
