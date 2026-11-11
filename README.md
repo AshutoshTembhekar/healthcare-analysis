@@ -44,11 +44,11 @@ Where:
 * **Quarantine Yield:** $\vert{}D \setminus D_{\mathrm{clean}}\vert{} = 108$ corrupt records isolated and dropped, leaving $\vert{}D_{\mathrm{clean}}\vert{} = 55,392$ verified records.
 
 ### 3. Operational Metric Engineering
-For each validated record $r_i \in D_{\mathrm{clean}}$, net inpatient **Length of Stay ($\mathrm{LOS}_i$)** in days is computed as:
+For each validated record $r_i \in D_{\mathrm{clean}}$, net inpatient **Length of Stay** ($\mathrm{LOS}_i$) in days is computed as:
 
 $$\mathrm{LOS}_i = (T_{\mathrm{discharge}, i} - T_{\mathrm{admission}, i})_{\mathrm{days}}$$
 
-To normalize financial auditing across same-day discharges ($\mathrm{LOS}_i = 0$) and multi-week stays without zero-division faults, the **Daily Billing Rate ($R_{\mathrm{daily}, i}$)** is formulated with a unit-day floor:
+To normalize financial auditing across same-day discharges ($\mathrm{LOS}_i = 0$) and multi-week stays without zero-division faults, the **Daily Billing Rate** ($R_{\mathrm{daily}, i}$) is formulated with a unit-day floor:
 
 $$R_{\mathrm{daily}, i} = \frac{B_i}{\max(\mathrm{LOS}_i, 1)}$$
 
@@ -93,7 +93,7 @@ $$R_{\mathrm{daily}, i} = \frac{B_i}{\max(\mathrm{LOS}_i, 1)}$$
 
 ### 1. Environment Setup
 ```bash
-git clone [https://github.com/AshutoshTembhekar/healthcare-analysis.git](https://github.com/AshutoshTembhekar/healthcare-analysis.git)
+git clone https://github.com/AshutoshTembhekar/healthcare-analysis.git
 cd healthcare-analysis
 pip install -r requirements.txt
 ```
@@ -117,4 +117,4 @@ Launch `healthcare_eda.ipynb` inside Jupyter or VS Code to explore capacity dyna
 
 **Ashutosh Tembhekar**  
 *Data Analytics & Data Engineering*  
-GitHub: https://github.com/AshutoshTembhekar
+GitHub: [@AshutoshTembhekar](https://github.com/AshutoshTembhekar)
