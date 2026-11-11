@@ -8,7 +8,7 @@ A production-grade Python data engineering pipeline designed to ingest, validate
 
 | Path / Module | Layer | Description |
 | :--- | :--- | :--- |
-| `.github/workflows/ci.yml` | CI/CD | Automated linting (`ruff`) and `pytest` execution on push/PR |
+| `.github/workflows/ci.yaml` | CI/CD | Automated linting (`ruff`) and `pytest` execution on push/PR |
 | `data/raw/` | Storage (Raw) | Source clinical CSV datasets (untracked in Git) |
 | `data/processed/` | Storage (Clean) | Validated, compressed Apache Parquet analytical tables |
 | `src/anonymizer.py` | Security / PHI | Salted SHA-256 deterministic patient pseudonymization |
@@ -18,6 +18,8 @@ A production-grade Python data engineering pipeline designed to ingest, validate
 | `tests/test_validation.py` | Unit Test | Temporal inversion, negative billing, and age boundary assertions |
 | `tests/test_pipeline.py` | Integration Test | Full pipeline execution and Parquet output verification |
 | `healthcare_eda.ipynb` | Analytics | Interactive LOS capacity analysis and payer financial audit |
+| `length_of_stay.png` | Visualization | Boxplot of inpatient stay duration across clinical conditions |
+| `billing_rate.png` | Visualization | Heatmap of median daily billing rates by insurer and severity |
 | `requirements.txt` | Environment | Pinned production and testing package dependencies |
 
 ---
@@ -52,6 +54,16 @@ $$R_{\mathrm{daily}, i} = \frac{B_i}{\max(\mathrm{LOS}_i, 1)}$$
 
 ---
 
+## Operational & Financial Analytics
+
+### 1. Length of Stay (LOS) Dispersion Across Clinical Conditions
+![LOS Dispersion](length_of_stay.png)
+
+### 2. Median Daily Billing Rate by Payer & Admission Severity
+![Billing Heatmap](billing_rate.png)
+
+---
+
 ## Key Pipeline Features
 
 1. **PHI Pseudonymization (`src/anonymizer.py`)**
@@ -71,7 +83,7 @@ $$R_{\mathrm{daily}, i} = \frac{B_i}{\max(\mathrm{LOS}_i, 1)}$$
    - Calculates operational metrics (`Length_of_Stay_Days` and `Daily_Billing_Rate`).
    - Serializes clean records into Apache Parquet format for fast, compressed columnar querying.
 
-4. **CI/CD Automation (`.github/workflows/ci.yml`)**
+4. **CI/CD Automation (`.github/workflows/ci.yaml`)**
    - Configured for automated Ubuntu runners.
    - Runs `ruff` for code hygiene and executes all 9 `pytest` test suites across PRs and main merges.
 
